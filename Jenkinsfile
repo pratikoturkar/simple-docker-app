@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "yourdockerhubusername/blue-green-demo"
+        DOCKER_IMAGE = "pratikoturkar/blue-green-demo"
         DOCKER_CREDENTIALS_ID = "dockerhub-creds"
         KUBE_NAMESPACE = "default"
         APP_NAME = "my-app"
