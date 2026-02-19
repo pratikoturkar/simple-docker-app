@@ -105,7 +105,7 @@ pipeline {
 
                 Blue-Green Deployment Completed Successfully.
                 """,
-                to: "your-team@example.com"
+                to: "pratik.oturkar@gmail.com"
             )
         }
 
@@ -119,7 +119,7 @@ pipeline {
                 ${BUILD_URL}
 
                 """,
-                to: "your-team@example.com"
+                to: "pratik.oturkar@gmail.com"
             )
         }
     }
