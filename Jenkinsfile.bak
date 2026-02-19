@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "pratikoturkar/n8n"
+        DOCKER_IMAGE = "pratikoturkar/blue-green-demo"
         DOCKER_CREDENTIALS_ID = "dockerhub-creds"
         KUBE_NAMESPACE = "default"
         APP_NAME = "my-app"
@@ -26,7 +26,6 @@ pipeline {
                     env.BUILD_TAG_VERSION = "${BUILD_NUMBER}"
                 }
                 sh """
-                set -e
                 docker build \
                 --build-arg VERSION=${BUILD_NUMBER} \
                 -t $DOCKER_IMAGE:${BUILD_TAG_VERSION} .
@@ -41,9 +40,9 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
+
                     sh """
-                    set -e
-                    echo $DOCKER_PASS | docker login docker.io -u $DOCKER_USER --password-stdin
+                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
                     docker push $DOCKER_IMAGE:${BUILD_TAG_VERSION}
                     docker logout
                     """
@@ -54,9 +53,10 @@ pipeline {
         stage('Blue-Green Deploy') {
             steps {
                 script {
+
                     // Detect current live color
                     def currentColor = sh(
-                        script: "kubectl get svc ${APP_NAME}-service -n ${KUBE_NAMESPACE} -o jsonpath='{.spec.selector.version}' || echo blue",
+                        script: "kubectl get svc ${APP_NAME}-service -o jsonpath='{.spec.selector.version}' || echo blue",
                         returnStdout: true
                     ).trim()
 
@@ -67,22 +67,19 @@ pipeline {
 
                     // Deploy new version
                     sh """
-                    set -e
                     sed -e 's|{{IMAGE}}|$DOCKER_IMAGE:${BUILD_TAG_VERSION}|g' \
                         -e 's|{{COLOR}}|${newColor}|g' \
-                        k8s/deployment-template.yaml | kubectl apply -n ${KUBE_NAMESPACE} -f -
+                        k8s/deployment-template.yaml | kubectl apply -f -
                     """
 
                     // Wait for rollout
                     sh """
-                    set -e
-                    kubectl rollout status deployment/${APP_NAME}-${newColor} -n ${KUBE_NAMESPACE}
+                    kubectl rollout status deployment/${APP_NAME}-${newColor}
                     """
 
                     // Switch service to new version
                     sh """
-                    set -e
-                    kubectl patch service ${APP_NAME}-service -n ${KUBE_NAMESPACE} \
+                    kubectl patch service ${APP_NAME}-service \
                     -p '{"spec":{"selector":{"app":"${APP_NAME}","version":"${newColor}"}}}'
                     """
 
@@ -93,6 +90,7 @@ pipeline {
     }
 
     post {
+
         success {
             emailext(
                 subject: "SUCCESS: Job ${JOB_NAME} #${BUILD_NUMBER}",
@@ -105,7 +103,7 @@ pipeline {
 
                 Blue-Green Deployment Completed Successfully.
                 """,
-                to: "your-team@example.com"
+                to: "your-email@example.com"
             )
         }
 
@@ -119,7 +117,7 @@ pipeline {
                 ${BUILD_URL}
 
                 """,
-                to: "your-team@example.com"
+                to: "your-email@example.com"
             )
         }
     }
