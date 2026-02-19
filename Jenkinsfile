@@ -50,6 +50,24 @@ pipeline {
                 }
             }
         }
+        
+        stage('Ensure Service Exists') {
+            steps {
+                script {
+                    // Apply the service manifest if it doesn't exist
+                    sh """
+                    set -e
+                    if ! kubectl get svc ${APP_NAME}-service -n ${KUBE_NAMESPACE}; then
+                        echo "Service not found, creating..."
+                        kubectl apply -n ${KUBE_NAMESPACE} -f k8s/service.yaml
+                    else
+                        echo "Service already exists, skipping creation."
+                    fi
+                    """
+                }
+            }
+        }
+
 
         stage('Blue-Green Deploy') {
             steps {
