@@ -1,3 +1,1 @@
-From Home
-1
-2
+This is simple My APP
