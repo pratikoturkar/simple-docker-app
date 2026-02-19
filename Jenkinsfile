@@ -131,7 +131,7 @@ pipeline {
                 Job Name: ${JOB_NAME}
                 Build Number: ${BUILD_NUMBER}
                 Docker Image: ${DOCKER_IMAGE}:${BUILD_NUMBER}
-                Commit Message: ${params.GIT_COMMIT}
+                Commit Message: ${params.GIT_COMMIT_MESSAGE}
 
                 Blue-Green Deployment Completed Successfully.
                 """,
