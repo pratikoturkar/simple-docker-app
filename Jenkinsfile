@@ -70,7 +70,7 @@ pipeline {
                     set -e
                     sed -e 's|{{IMAGE}}|$DOCKER_IMAGE:${BUILD_TAG_VERSION}|g' \
                         -e 's|{{COLOR}}|${newColor}|g' \
-                        k8s/deployment-template.yaml | kubectl apply -n ${KUBE_NAMESPACE} -f -
+                        k8/deployment-template.yaml | kubectl apply -n ${KUBE_NAMESPACE} -f -
                     """
 
                     // Wait for rollout
