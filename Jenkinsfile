@@ -59,7 +59,7 @@ pipeline {
                     set -e
                     if ! kubectl get svc ${APP_NAME}-service -n ${KUBE_NAMESPACE}; then
                         echo "Service not found, creating..."
-                        kubectl apply -n ${KUBE_NAMESPACE} -f k8s/service.yaml
+                        kubectl apply -n ${KUBE_NAMESPACE} -f k8/service.yaml
                     else
                         echo "Service already exists, skipping creation."
                     fi
