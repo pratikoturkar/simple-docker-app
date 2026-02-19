@@ -11,8 +11,19 @@ pipeline {
     triggers {
         githubPush()
     }
+    
+    parameters { 
+        string(name: 'GIT_COMMIT_MESSAGE', defaultValue: '', description: 'Commit message from webhook') 
+    }
+
 
     stages {
+        
+        stage('Print Commit Message') { 
+            steps { 
+                echo "Commit message: ${params.GIT_COMMIT_MESSAGE}" 
+            } 
+        }
 
         stage('Checkout Code') {
             steps {
